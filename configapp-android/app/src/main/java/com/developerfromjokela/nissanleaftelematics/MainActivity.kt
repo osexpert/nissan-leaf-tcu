@@ -18,6 +18,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import android.view.WindowManager
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
@@ -103,6 +104,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         val pm = getSystemService(POWER_SERVICE) as PowerManager
         wl = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "nissanleaftelematics:MainActivity")
         wl.acquire(10*60*1000L /*10 minutes*/)
