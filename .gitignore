@@ -1,3 +1,5 @@
 .venv
 .idea
 captured_data
+.DS_STORE
+__pycache__
