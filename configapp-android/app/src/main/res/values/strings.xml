@@ -28,6 +28,9 @@
     <string name="connection_init_finish">Connection with Telematics established</string>
     <string name="data_empty">No data received!</string>
     <string name="data_integrity_check">Data integrity check</string>
+    <string name="read_all_fields">Read all fields</string>
+    <string name="read_all_complete">All fields read successfully</string>
+    <string name="read_all_complete_with_failures">%1$d of %2$d fields failed to read</string>
     <string name="vin_too_long">VIN is too long!</string>
     <string name="data_too_long">Data is too long! 128 char max!</string>
     <string name="writing_data">Writing data</string>
