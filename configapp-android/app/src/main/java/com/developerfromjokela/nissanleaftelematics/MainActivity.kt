@@ -123,6 +123,8 @@ class MainActivity : AppCompatActivity() {
                     Log.e("MA", "Dataintegrity: $dataIntegrity")
                 } else if (menuItem.itemId == R.id.chooseDevice) {
                     chooseDevice()
+                } else if (menuItem.itemId == R.id.readAllFields) {
+                    readAllFields()
                 }
                 return true
             }
@@ -534,22 +536,27 @@ class MainActivity : AppCompatActivity() {
         return OBDCommand(pid)
     }
 
-    private fun onReadClick(item: TCUConfigItem) {
+    private fun onReadClick(item: TCUConfigItem, onComplete: ((Boolean) -> Unit)? = null) {
         if (!connected) {
             Toast.makeText(this, R.string.not_connected, Toast.LENGTH_SHORT).show()
+            onComplete?.invoke(false)
             return
         }
 
         if (currentTCUProfile == null) {
             Toast.makeText(this, R.string.device_type_not_selected, Toast.LENGTH_SHORT).show()
+            onComplete?.invoke(false)
             return
         }
 
-        progressDialog = ProgressDialog(this)
-        progressDialog!!.setTitle(R.string.reading_data)
-        progressDialog!!.setMessage(getString(R.string.reading_data_desc))
-        progressDialog!!.setProgressStyle(ProgressDialog.STYLE_SPINNER)
-        progressDialog!!.isIndeterminate = true
+        val showDialog = onComplete == null
+        if (showDialog) {
+            progressDialog = ProgressDialog(this)
+            progressDialog!!.setTitle(R.string.reading_data)
+            progressDialog!!.setMessage(getString(R.string.reading_data_desc))
+            progressDialog!!.setProgressStyle(ProgressDialog.STYLE_SPINNER)
+            progressDialog!!.isIndeterminate = true
+        }
 
         currentReadId = (100000..999999).random()
         successfulReadId = -1
@@ -573,7 +580,9 @@ class MainActivity : AppCompatActivity() {
             mChatService?.makeOBDCommand(OBDCommand(readPid), DATAREQ)
         }
 
-        progressDialog!!.show()
+        if (showDialog) {
+            progressDialog!!.show()
+        }
         sendReadCommand()
 
         Thread {
@@ -587,7 +596,8 @@ class MainActivity : AppCompatActivity() {
                 if (currentReadId == successfulReadId) {
                     Log.e("MA", "Read success for field ${item.configId}")
                     runOnUiThread {
-                        progressDialog?.dismiss()
+                        if (showDialog) progressDialog?.dismiss()
+                        onComplete?.invoke(true)
                     }
                     return@Thread
                 }
@@ -596,12 +606,64 @@ class MainActivity : AppCompatActivity() {
             // Timed out
             Log.e("MA", "Read timed out for field ${item.configId}")
             runOnUiThread {
-                Toast.makeText(this, R.string.timeout, Toast.LENGTH_LONG)
-                progressDialog!!.dismiss()
+                if (showDialog) {
+                    Toast.makeText(this, R.string.timeout, Toast.LENGTH_LONG)
+                    progressDialog!!.dismiss()
+                }
+                onComplete?.invoke(false)
             }
         }.start()
 
     }
+
+    private fun readAllFields() {
+        if (!connected) {
+            Toast.makeText(this, R.string.not_connected, Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if (currentTCUProfile == null) {
+            Toast.makeText(this, R.string.device_type_not_selected, Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val itemsToRead = configItems.toList()
+        if (itemsToRead.isEmpty()) return
+
+        progressDialog = ProgressDialog(this)
+        progressDialog!!.setTitle(R.string.reading_data)
+        progressDialog!!.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL)
+        progressDialog!!.max = itemsToRead.size
+        progressDialog!!.isIndeterminate = false
+        progressDialog!!.setCancelable(false)
+        progressDialog!!.show()
+
+        var failedCount = 0
+
+        fun readNext(index: Int) {
+            if (index >= itemsToRead.size) {
+                progressDialog?.dismiss()
+                val msg = if (failedCount == 0) {
+                    getString(R.string.read_all_complete)
+                } else {
+                    getString(R.string.read_all_complete_with_failures, failedCount, itemsToRead.size)
+                }
+                Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
+                return
+            }
+
+            progressDialog?.setMessage("${itemsToRead[index].let { getString(it.uiName) }} (${index + 1}/${itemsToRead.size})")
+
+            onReadClick(itemsToRead[index]) { success ->
+                if (!success) failedCount++
+                readNext(index + 1)
+            }
+        }
+
+        readNext(0)
+    }
+
+
 
     @OptIn(ExperimentalStdlibApi::class)
     private fun onWriteClick(item: TCUConfigItem, newVal: ByteArray, skipEmptyData: Boolean = false) {
