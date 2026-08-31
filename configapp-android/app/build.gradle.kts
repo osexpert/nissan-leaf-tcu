@@ -8,11 +8,11 @@ android {
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.developerfromjokela.nissanleaftelematics"
+        applicationId = "com.osexpert.nissanleaftelematics"
         minSdk = 24
         targetSdk = 34
         versionCode = 24
-        versionName = "1.0.19"
+        versionName = "1.0.19-osexpert"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
