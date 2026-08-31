@@ -13,5 +13,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Nissan Leaf Telematics"
+rootProject.name = "Nissan Leaf Telematics (osexpert)"
 include(":app")
