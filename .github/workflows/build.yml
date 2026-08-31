@@ -4,9 +4,19 @@ on:
   push:
     branches: [ "master", "main" ]
     tags: [ "v*" ]
+    paths:
+      - 'configapp-android/**'
+      - '.github/workflows/build.yml'
   pull_request:
     branches: [ "master", "main" ]
+    paths:
+      - 'configapp-android/**'
+      - '.github/workflows/build.yml'
   workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: configapp-android
 
 jobs:
   build:
@@ -42,14 +52,14 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: app-debug
-          path: app/build/outputs/apk/debug/*.apk
+          path: configapp-android/app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
 
       - name: Upload release APK
         uses: actions/upload-artifact@v4
         with:
           name: app-release
-          path: app/build/outputs/apk/release/*.apk
+          path: configapp-android/app/build/outputs/apk/release/*.apk
           if-no-files-found: error
 
   release:
