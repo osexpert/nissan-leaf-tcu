@@ -78,7 +78,7 @@ class TCUConfigAdapter(
         }
 
         if (configItem.type == 6) {
-            var svcHolder = rvHolder as FICOSA_ServicesViewHolder
+            val svcHolder = rvHolder as FICOSA_ServicesViewHolder
             val validReadValue = configItem.currentReadValue != null && configItem.currentReadValue!!.isNotEmpty()
             svcHolder.svtb.isEnabled = validReadValue
             svcHolder.rlu.isEnabled = validReadValue
@@ -150,6 +150,7 @@ class TCUConfigAdapter(
                 isEnabled = !configItem.readOnly
                 maxEms = configItem.fieldMaxLength.takeIf { it > 0 } ?: Int.MAX_VALUE
             }
+            holder.valueField.setText("")
 
             if (configItem.currentReadValue != null) {
                 if (configItem.type == 0) {
@@ -172,7 +173,6 @@ class TCUConfigAdapter(
                     )
                 }
             } else {
-                holder.valueField.setText("")
                 if (configItem.type == 0) {
                     holder.fieldName.text = holder.itemView.context.getString(configItem.uiName)
                 }
