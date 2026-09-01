@@ -90,6 +90,11 @@ class TCUConfigAdapter(
                 svcHolder.rlu.isChecked = configItem.currentReadValue!![9] > 0
                 svcHolder.horn.isChecked = configItem.currentReadValue!![10] > 0
                 svcHolder.remotestart.isChecked = configItem.currentReadValue!![11] > 0
+            } else {
+                svcHolder.svtb.isChecked = false
+                svcHolder.rlu.isChecked = false
+                svcHolder.horn.isChecked = false
+                svcHolder.remotestart.isChecked = false
             }
 
 
@@ -100,9 +105,9 @@ class TCUConfigAdapter(
                     val dataBuff = configItem.currentReadValue!!.copyOf()
 
                     dataBuff[8] = svcHolder.svtb.isChecked.toInt().toByte()
-                    dataBuff[9] = svcHolder.svtb.isChecked.toInt().toByte()
-                    dataBuff[10] = svcHolder.svtb.isChecked.toInt().toByte()
-                    dataBuff[11] = svcHolder.svtb.isChecked.toInt().toByte()
+                    dataBuff[9] = svcHolder.rlu.isChecked.toInt().toByte()
+                    dataBuff[10] = svcHolder.horn.isChecked.toInt().toByte()
+                    dataBuff[11] = svcHolder.remotestart.isChecked.toInt().toByte()
 
                     onWriteClick(configItem, dataBuff)
                 }
@@ -116,6 +121,12 @@ class TCUConfigAdapter(
                 apnHolder.password.setText(String((configItem.currentReadValue!!).copyOfRange(APN_FIELD_SIZE*2, APN_FIELD_SIZE*3)).trim { it <= ' ' })
                 apnHolder.dns1.setText(String((configItem.currentReadValue!!).copyOfRange(APN_FIELD_SIZE*3, APN_FIELD_SIZE*4)).trim { it <= ' ' })
                 apnHolder.dns2.setText(String((configItem.currentReadValue!!).copyOfRange(APN_FIELD_SIZE*4, APN_FIELD_SIZE*5)).trim { it <= ' ' })
+            } else {
+                apnHolder.valueField.setText("")
+                apnHolder.user.setText("")
+                apnHolder.password.setText("")
+                apnHolder.dns1.setText("")
+                apnHolder.dns2.setText("")
             }
 
             holder.writeBtn.apply {
@@ -159,6 +170,11 @@ class TCUConfigAdapter(
                     holder.valueField.setText(
                         "ANT:${telAntLevel},RECEPTION:${receptionPower},ERRRATE:${errorRate}",
                     )
+                }
+            } else {
+                holder.valueField.setText("")
+                if (configItem.type == 0) {
+                    holder.fieldName.text = holder.itemView.context.getString(configItem.uiName)
                 }
             }
 
