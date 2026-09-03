@@ -9,7 +9,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputEditText
 import com.developerfromjokela.nissanleaftelematics.R
-import com.developerfromjokela.nissanleaftelematics.utils.CRC16
+import com.developerfromjokela.nissanleaftelematics.utils.VinChecksum
 import com.developerfromjokela.nissanleaftelematics.utils.DtcUtils
 import com.google.android.material.materialswitch.MaterialSwitch
 
@@ -159,7 +159,7 @@ class TCUConfigAdapter(
                     val vinBytes = configItem.currentReadValue!!.copyOfRange(0, configItem.currentReadValue!!.size-2)
                     val vin = String(vinBytes)
                     val crc = configItem.currentReadValue!!.copyOfRange(configItem.currentReadValue!!.size-2, configItem.currentReadValue!!.size)
-                    val calcCRC = CRC16().calculateBytesLittleEndian(vinBytes)
+                    val calcCRC = VinChecksum().calculateBytesBigEndian(vinBytes)
                     holder.fieldName.text = "${holder.itemView.context.getString(configItem.uiName)}, CRC: ${crc.toHexString()}, expected: ${calcCRC.toHexString()}"
                     holder.valueField.setText(vin)
                 } else if (configItem.type == 1) {
