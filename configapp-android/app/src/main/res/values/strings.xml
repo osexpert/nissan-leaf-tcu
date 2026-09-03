@@ -72,4 +72,7 @@
     <string name="horn"><![CDATA[Remote Horn&Light]]></string>
     <string name="remotestart">Remote Start</string>
     <string name="timeout">Timeout</string>
+    <string name="erase_dtc">Clear DTC</string>
+    <string name="dtc_status">DTC Status</string>
+    <string name="dtc_clear_success">DTC Codes Cleared Successfully!</string>
 </resources>
