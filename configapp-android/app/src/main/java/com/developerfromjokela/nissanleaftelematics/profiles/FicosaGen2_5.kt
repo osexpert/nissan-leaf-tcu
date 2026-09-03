@@ -2,7 +2,7 @@ package com.developerfromjokela.nissanleaftelematics.profiles
 
 import com.developerfromjokela.nissanleaftelematics.R
 import com.developerfromjokela.nissanleaftelematics.config.TCUConfigItem
-import com.developerfromjokela.nissanleaftelematics.utils.CRC16
+import com.developerfromjokela.nissanleaftelematics.utils.VinChecksum
 
 class FicosaGen2_5(
     override var nameRes: Int = R.string.ficosa_gen2_5,
