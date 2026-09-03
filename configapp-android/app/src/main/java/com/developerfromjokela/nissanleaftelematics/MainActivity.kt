@@ -460,10 +460,13 @@ class MainActivity : AppCompatActivity() {
                                 handleReadFieldData(dataId, (packet1.data).sliceArray(3 until packet1.data.size))
                             }
                             0x59 -> {
-                                Log.e("DTC", packet1.data.toHexString())
+                                successfulReadId = currentReadId
+                                println("DTC "+ packet1.data.toHexString())
                                 handleReadFieldData(0x59.toUByte(), packet1.data)
                             }
                             0x54 -> {
+                                println("DTC CLEAR!")
+                                progressDialog?.dismiss()
                                 Toast.makeText(this, R.string.dtc_clear_success, Toast.LENGTH_LONG).show()
                             }
                             else -> {
@@ -618,7 +621,7 @@ class MainActivity : AppCompatActivity() {
         }
         val payloadMaker = CanPayloadMaker()
         progressDialog = ProgressDialog(this)
-        progressDialog!!.setTitle(R.string.writing_data)
+        progressDialog!!.setTitle(if (item.type == 7) R.string.clearing_dtc else R.string.writing_data)
         progressDialog!!.setMessage(getString(R.string.writing_data_desc))
         progressDialog!!.setProgressStyle(ProgressDialog.STYLE_SPINNER)
         progressDialog!!.isIndeterminate = true
@@ -660,7 +663,7 @@ class MainActivity : AppCompatActivity() {
 
         mChatService?.makeOBDMultiCommand(payloadParts.map {
             stringHexToOBDCommand(it)
-        }, DATAWRITE_OPERATION)
+        }, if (item.type == 7) DATAREQ else DATAWRITE_OPERATION)
     }
 
     override fun onRequestPermissionsResult(

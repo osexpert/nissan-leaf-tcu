@@ -17,6 +17,7 @@ class ExampleUnitTest {
     @Test
     fun payloadMaker() {
         println(CanPayloadMaker().processCommandToFrames("3B 13 01 69 6E 74 65 72 6E 65 74 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00"))
+        println(CanPayloadMaker().processCommandToFrames("1902FF"))
     }
 
     @OptIn(ExperimentalStdlibApi::class)
@@ -24,6 +25,8 @@ class ExampleUnitTest {
     fun payloadParser() {
         println(CanPayloadParser().parse("03610401FFFFFFFF").data!!.toHexString())
         println(CanPayloadParser().parse("05610900104FFFFF").data!!.toHexString())
+        println(CanPayloadParser().parse("0359020BFFFFFFFF").data!!.toHexString()) // DTC
+        println(CanPayloadParser().parse("102359020BD00001210BDA0B130BDA0622150BDA09130BAE2301F008AE02550B24AE075508DA0300250BFFFFFFFFFFFF").data!!.toHexString()) // DTC with codes
     }
 
 
