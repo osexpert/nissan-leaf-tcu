@@ -459,6 +459,13 @@ class MainActivity : AppCompatActivity() {
                                         (packet1.data[2].toInt() and 0xFF)).toUByte()
                                 handleReadFieldData(dataId, (packet1.data).sliceArray(3 until packet1.data.size))
                             }
+                            0x59 -> {
+                                Log.e("DTC", packet1.data.toHexString())
+                                handleReadFieldData(0x59.toUByte(), packet1.data)
+                            }
+                            0x54 -> {
+                                Toast.makeText(this, R.string.dtc_clear_success, Toast.LENGTH_LONG).show()
+                            }
                             else -> {
                                 Log.e("UNKNOWN DATA", packet1.data.toHexString())
                                 Toast.makeText(this, "Unknown message type: ${packet1.data[0].toInt()}", Toast.LENGTH_LONG).show()

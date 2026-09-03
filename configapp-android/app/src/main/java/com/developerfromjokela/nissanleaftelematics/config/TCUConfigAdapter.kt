@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputEditText
 import com.developerfromjokela.nissanleaftelematics.R
 import com.developerfromjokela.nissanleaftelematics.utils.CRC16
+import com.developerfromjokela.nissanleaftelematics.utils.DtcUtils
 import com.google.android.material.materialswitch.MaterialSwitch
 
 fun Boolean.toInt() = if (this) 1 else 0
@@ -147,10 +148,11 @@ class TCUConfigAdapter(
 
             // Configure value field
             holder.valueField.apply {
-                isEnabled = !configItem.readOnly
+                isEnabled = (!configItem.readOnly && configItem.type != 7)
                 maxEms = configItem.fieldMaxLength.takeIf { it > 0 } ?: Int.MAX_VALUE
             }
             holder.valueField.setText("")
+            holder.writeBtn.setText(if (configItem.type == 7) R.string.erase_dtc else R.string.write)
 
             if (configItem.currentReadValue != null) {
                 if (configItem.type == 0) {
@@ -164,6 +166,9 @@ class TCUConfigAdapter(
                     holder.valueField.setText(String((configItem.currentReadValue!!).copyOfRange(1, configItem.currentReadValue!!.size-1)).trim { it <= ' ' })
                 } else if (configItem.type == 2) {
                     holder.valueField.setText(configItem.currentReadValue!![0].toInt().toString())
+                } else if (configItem.type == 7) {
+                    val report = DtcUtils.generateReport(configItem.currentReadValue!!)
+                    holder.valueField.setText(report)
                 } else {
                     val telAntLevel = configItem.currentReadValue!![0].toInt()
                     val receptionPower = configItem.currentReadValue!![1].toInt()

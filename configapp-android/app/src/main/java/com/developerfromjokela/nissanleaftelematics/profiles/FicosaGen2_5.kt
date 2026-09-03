@@ -14,6 +14,7 @@ class FicosaGen2_5(
         TCUConfigItem(configId = 0x04, fieldLength = 1, type = 2, fieldMaxLength = 1, readOnly = false, uiName = R.string.activation),
         TCUConfigItem(configId = 0x09, fieldLength = 20, type = 3, fieldMaxLength = 20, readOnly = true, uiName = R.string.signal_level),
         TCUConfigItem(configId = 0x81, fieldLength = 17, type = 0, fieldMaxLength = 17, readOnly = false, uiName = R.string.vin),
+        TCUConfigItem(configId = 0x59, fieldLength = 4096, type = 7, fieldMaxLength = 4096, readOnly = false, uiName = R.string.dtc_status),
         TCUConfigItem(configId = 0x10, fieldLength = 128, type = 1, fieldMaxLength = 128, readOnly = false, uiName = R.string.apn_name),
         TCUConfigItem(configId = 0x15, fieldLength = 32, type = 1, fieldMaxLength = 32, readOnly = false, uiName = R.string.apn_user),
         TCUConfigItem(configId = 0x16, fieldLength = 32, type = 1, fieldMaxLength = 32, readOnly = false, uiName = R.string.apn_pass),
@@ -53,6 +54,10 @@ class FicosaGen2_5(
                 // SVC write
                 return "3B03" + data.toHexString(HexFormat.Default).uppercase()
             }
+            7 -> {
+                // Clear DTC
+                return "14FFFFFF"
+            }
             2 -> {
                 // TCU activation write
                 val actState = data[0].toInt()
@@ -64,6 +69,9 @@ class FicosaGen2_5(
     }
 
     override fun makeOBDRead(item: TCUConfigItem): String {
+        if (item.type == 7) {
+            return "1902FF"
+        }
         return "0221"+("%02x".format(item.configId).uppercase())
     }
 }
