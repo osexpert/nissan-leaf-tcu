@@ -40,9 +40,9 @@ class FicosaGen2_5(
         when (item.type) {
             0 -> {
                 // VIN write
-                val crc16 = CRC16().calculateBytesLittleEndian(data)
+                val checksum = VinChecksum().calculateBytesBigEndian(data)
                 var crcData = data.copyOf()
-                crcData += crc16
+                crcData += checksum
                 return "3B81" + crcData.toHexString(HexFormat.Default).uppercase()
             }
             1 -> {
