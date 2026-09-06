@@ -14,21 +14,26 @@ class CanPayloadParser {
         var dataLength = 0
         var data: ByteArray? = null
         for (chunk in cleanHex.chunked(16)) {
-            val packetId = chunk.substring(0, 2).toInt(radix = 16)
-            println(packetId)
-            if (packetId == 16) {
+            val pciByte = chunk.substring(0, 2).toInt(radix = 16)
+            val pciType = pciByte and 0xF0
+            println(pciByte)
+            if (pciType == 0x30) {
+                // Flow Control frame leaked into the stream (e.g. echoed request) - not payload, skip it
+                println("Skipping Flow Control frame $chunk")
+                continue
+            } else if (pciType == 0x10) {
                 if (chunk.length < 8) {
                     println("Header malformed $chunk")
                     continue
                 }
                 println(chunk)
-                // Header
-                dataLength = chunk.substring(2, 4).toInt(16)
+                // First Frame: length is 12 bits - low nibble of PCI byte + full second byte
+                dataLength = ((pciByte and 0x0F) shl 8) or chunk.substring(2, 4).toInt(16)
                 val firstDataChunk = chunk.substring(4).hexToByteArray()
                 data = ByteArray(0)
                 data += firstDataChunk
-            } else if (packetId >= 30 && data != null && dataLength > data.size) {
-                // Data
+            } else if (pciType == 0x20 && data != null && dataLength > data.size) {
+                // Consecutive Frame
                 val newChunk = chunk.substring(2).hexToByteArray()
                 println("datasize: ${data.size}, newchunksize: ${newChunk.size}, maxlen: $dataLength")
                 data += if (data.size+newChunk.size > dataLength) {
@@ -40,7 +45,8 @@ class CanPayloadParser {
                     newChunk
                 }
             } else {
-                dataLength = packetId
+                // Single Frame: length is the low nibble of the PCI byte
+                dataLength = pciByte and 0x0F
                 val firstDataChunk = chunk.substring(2).hexToByteArray()
                 data = ByteArray(0)
                 data += firstDataChunk.copyOf(dataLength)
